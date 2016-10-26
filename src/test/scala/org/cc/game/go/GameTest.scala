@@ -5,8 +5,8 @@ import org.scalatest.FunSuite
 
 class GameTest extends FunSuite {
 
-  import Game._
   import Board._
+  import Game._
 
   // An empty game
   val Start = Game()
