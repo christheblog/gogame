@@ -104,6 +104,38 @@ class GameTest extends FunSuite {
     assert(undone.board==game.board)
   }
 
+
+  // FIXME : this test is failing
+  test("Non-repetition rule : a game should not be able to come back to an immediate previous state") {
+
+    // The RepetitionPattern looks like this :
+    //
+    //  __| A  B  C  D  E
+    //  01| .  *  o  .  .
+    //  02| *  .  .  o  .
+    //  03| .  *  o  .  .
+    //  04| .  .  .  .  .
+    val RepetitionPattern: List[Option[Position]] = List(
+      pos(2,1),  // Black
+      pos(3,1),  // White
+      pos(2,3),  // Black
+      pos(3,3),  // White
+      pos(1,2),  // Black
+      pos(4,2)   // White
+    )
+    val Right(game) = playAll(Start)(RepetitionPattern)
+    // This is Black to play
+    assert(game.current==Black)
+    // Should take 4 Black => White score should be +4
+    val Right(next1) = play(game)(pos(3,2)) // Black
+    val Right(next2) = play(next1)(pos(2,2)) // White is taking Black
+    assert(next2.current==Black)
+    assert(next2.score.white==1)
+    // Black try to go back in (3,2) - this should be prevented
+    assert(play(next2)(pos(3,2)).isLeft)
+  }
+
+
   private def pos(x: Int, y: Int): Option[Position] = Some((x,y))
   private def pass() = None
 }
